@@ -7,6 +7,7 @@
         <p><strong>Username:</strong> {{ currentUser.username }}</p>
       </div>
       <button @click="logout" class="logout-button">Logout</button>
+      <button @click="testRequest" class="logout-button">请求测试</button>
     </div>
     
     <div v-else class="login-form">
@@ -193,6 +194,26 @@ export default {
       
       this.successMessage = "Logged out successfully"
     },
+    sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    },
+
+    async testRequest() {
+      for (let i = 0; i < 100; i++) {
+        const params = new URLSearchParams({ foo: i });
+        try {
+          const res = await fetch(`http://localhost:8080/api/auth/testThreadLocal?${params.toString()}`);
+          const data = await res.text();
+          console.log(data);
+        } catch (err) {
+          console.error(err);
+        }
+      
+        // 等待 0.1 秒再发送下一个请求
+        await this.sleep(100);
+      }
+    },
+
     checkAuthStatus() {
       const savedToken = localStorage.getItem('token')
       const savedUser = localStorage.getItem('user')

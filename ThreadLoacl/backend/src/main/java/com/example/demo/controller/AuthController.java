@@ -77,6 +77,12 @@ public class AuthController {
         return ResponseEntity.ok(stats);
     }
 
+    @GetMapping("/testThreadLocal")
+    public ResponseEntity<String> testThreadLocal(@RequestParam int foo){
+        System.out.println("getRequest:" + foo);
+        return ResponseEntity.ok("success");
+    }
+
     public static class LoginRequest {
         private String username;
         private String password;

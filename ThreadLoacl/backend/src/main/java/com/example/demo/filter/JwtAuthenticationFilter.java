@@ -1,7 +1,10 @@
 ﻿package com.example.demo.filter;
 
+import com.example.demo.model.test;
 import com.example.demo.service.UserService;
 import com.example.demo.util.UserContext;
+import com.example.demo.util.testContext;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,7 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import java.io.IOException;
 
@@ -32,7 +34,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String username = userService.getUsernameFromToken(token);
                 var user = userService.findByUsername(username);
                 user.ifPresent(u -> {
-                    System.out.println("----------------------" + token);
                     Object object = UserContext.getUser();
                     if(object!=null){
                         System.out.println(object.toString());
@@ -47,22 +48,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             }
         }
-        ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
+
+        String foo = request.getParameter("foo");
+        if(foo!= null){
+            test OldFoo = testContext.getTest();
+            if (OldFoo != null) {
+                System.out.println("旧的foo：" + OldFoo.getFoo() + " 哈希code:" + OldFoo.hashCode());
+            }
+            else{
+                System.out.println("没有旧的foo");
+            }
+            testContext.setTest(new test(Integer.parseInt(foo)));
+            System.out.println("新的foo：" + testContext.getTest().getFoo() + " 哈希code:" +testContext.getTest().hashCode());
+            System.gc();
+            
+        }
+
         try {
             filterChain.doFilter(request, response);
         } finally {
-            byte[] body = requestWrapper.getContentAsByteArray();
-            String name = new String(body, request.getCharacterEncoding());
-            System.out.println("----------------------bodyString" + name);
-            String token = UserContext.getToken();
-            if(token!=null){
-                System.out.println(token.hashCode());
-            }
-            UserContext.setToken(name);
-            token = UserContext.getToken();
-            if(token!=null){
-                System.out.println(token.hashCode());
-            }
         }
     }
     
